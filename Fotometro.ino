@@ -13,7 +13,7 @@ void sinalIniciar();
 
 // Som que mostra que a titulação chegou ao fim, pois a
 // solução mudou de cor:
-// [apito intermitente]
+// [apita sem parar]
 void sinalMudouCor();
 
 
@@ -40,48 +40,62 @@ void add(int dado) {
 void setup() {
     Serial.begin(9600);    
     pinMode(pinBuzz, OUTPUT);
+    
     sinalLigar();
+
+    // Monta o estado inicial a partir dos 30 primeiros dados:
+    while (count < 30) {
+        dadoLido = analogRead(pinLdr);
+        Serial.println(dadoLido);
+        add(dadoLido);
+        delay(300);
+    }
+
+    sinalIniciar();
 }
 
 
 void loop() {
     dadoLido = analogRead(pinLdr);
+    Serial.println(dadoLido);
     
     // Detecta o ponto de interesse:
     // Heurística - valor lido deve ser maior que 4x desvio padrão em cima da média recursiva.
     if (abs(dadoLido - mean) > 4*sqrt(var)) {
         sinalMudouCor();
     }
-        
-    add(dadoLido);
-    Serial.println(dadoLido);
-
-    delay(400);
+    else {
+        add(dadoLido);
+    }
+    
+    delay(300);
 }
 
 
 
 void sinalLigar() {
-    digitalWrite(pinBuzz, HIGH);
-    delay(100);
-    digitalWrite(pinBuzz, LOW);
-    delay(100);
-    digitalWrite(pinBuzz, HIGH);
-    delay(100);
-    digitalWrite(pinBuzz, LOW);
+    for (int i = 0; i < 2; i++) {
+        digitalWrite(pinBuzz, HIGH);
+        delay(100);
+        digitalWrite(pinBuzz, LOW);
+        delay(100);
+    }
 }
 
 void sinalIniciar() {
-    digitalWrite(pinBuzz, HIGH);
-    delay(250);
-    digitalWrite(pinBuzz, LOW);
-    delay(250);
-    digitalWrite(pinBuzz, HIGH);
-    delay(250);
-    digitalWrite(pinBuzz, LOW);
+    for (int i = 0; i < 2; i++) {
+        digitalWrite(pinBuzz, HIGH);
+        delay(250);
+        digitalWrite(pinBuzz, LOW);
+        delay(250);
+    }
 }
 
 void sinalMudouCor() {
-    digitalWrite(pinBuzz, HIGH);
-    while (true) delay(1000);
+    while (true) {
+        digitalWrite(pinBuzz, HIGH);
+        delay(100);
+        digitalWrite(pinBuzz, LOW);
+        delay(100);
+    }
 }
